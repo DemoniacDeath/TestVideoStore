@@ -1,0 +1,18 @@
+﻿@model Example.MVC.ViewModels.Movie
+
+@Html.DisplayNameFor(model => model.Title)
+<select name="@Html.NameFor(model => model.Title)"
+        id="@Html.IdFor(model => model.Title)"
+        class="title-select form-control">
+    <option value="">Выберите фильм</option>
+    @foreach (Example.Domain.Movie Movie in ViewBag.MoviesList)
+    {
+        <option value="@Movie.Title"
+                @((Model != null && @Movie.Title == Model.Title)?"selected=\"\"":""))
+                data-type="@Movie.Type">
+            @Movie.Title
+        </option>
+    }
+</select>
+
+<span class="movie-type"></span>

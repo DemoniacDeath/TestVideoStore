@@ -1,0 +1,9 @@
+﻿@model Example.MVC.ViewModels.Rental
+
+<div class="rental-container">
+    @Html.EditorFor(model => model.Movie)
+
+    @Html.DisplayNameFor(model => model.DaysRented)
+    @Html.EditorFor(model => model.DaysRented, new { htmlAttributes = new { @class = "form-control", @min = 1 } })
+    @Html.ValidationMessageFor(model => model.DaysRented, "", new { @class = "text-danger" })
+</div>

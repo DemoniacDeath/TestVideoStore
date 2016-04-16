@@ -1,0 +1,73 @@
+﻿@model Example.MVC.ViewModels.Customer
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label" })
+    @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+    @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+    <div id="rentals_container">
+        @Html.LabelFor(model => model.Rentals, htmlAttributes: new { @class = "control-label" })
+        @Html.EditorFor(model => model.Rentals, new { htmlAttributes = new { @class = "form-control" } })
+    </div>
+    @section scripts
+    {
+        <script type="text/javascript">
+            var movies = @Html.Raw(@Json.Encode(ViewBag.MoviesList));
+            var movieTypes = @Html.Raw(@Json.Encode(ViewBag.MovieTypesList));
+            $(function () {
+                function showMovieType(movieSelect)
+                {
+                    var movieType = "";
+                    if (movieSelect.val())
+                    {
+                        for (var i in movies)
+                        {
+                            if (movies[i].Title == movieSelect.val())
+                            {
+                                movieType = movieTypes[movies[i].Type];
+                            }
+                        }
+                    }
+                    movieSelect.parents('.rental-container').find('.movie-type').html(movieType);
+                }
+                function addNewRentalIfNeeded()
+                {
+                    var noEmpty = true;
+                    $('.title-select').each(function () {
+                        if (!$(this).val()) {
+                            noEmpty = false;
+                        }
+                    });
+                    if (noEmpty)
+                    {
+                        $.ajax("@Url.Action("GetNewRental", "Home")", {
+                            data: {
+                                Count: $('.title-select').size()
+                            },
+                            success: function (result) {
+                                $('#rentals_container').append(result);
+                            }
+                        })
+                    }
+                }
+                $('.title-select').each(function(){
+                    showMovieType($(this));
+                });
+                $("#rentals_container").on("change", ".title-select", function () {
+                    addNewRentalIfNeeded();
+                    showMovieType($(this));
+                });
+            });
+        </script>
+    }
+    <input type="submit" value="Посчитать" class="btn btn-default" />
+}
+
+@if (ViewBag.DisplayStatement != null)
+{
+    <div class="statement">
+        @Model.MapDomainModel().GetStatement()
+    </div>
+}
