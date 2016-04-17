@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using DataAnnotationsExtensions;
+using Example.Persistence.Entities;
 
 namespace Example.MVC.ViewModels
 {
     public class Rental
     {
-        public Movie Movie { get; set; }
+        public virtual Movie Movie { get; set; }
 
         [Required]
         [Min(1)]

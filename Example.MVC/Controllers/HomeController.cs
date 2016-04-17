@@ -1,49 +1,79 @@
-﻿using Example.MVC.Models;
-using Example.MVC.ViewModels;
-
+﻿using Example.MVC.ViewModels;
+using Example.Persistence.Contexts;
+using Example.Persistence.Interfaces;
+using Example.Persistence.Repositories;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System.Text;
 using System.Web.Mvc;
 
 namespace Example.MVC.Controllers
 {
     public class HomeController : Controller
     {
+        IMovieRepository MoviesRepository;
+
+        //Default behaviour - create an instance of MoviesRepository class
+        //with MoviesContext to be a repositoty of movies for this controller
+        public HomeController() : this(new MoviesRepository(new MoviesContext()))
+        {
+        }
+
+        //Dependency injection - pass specific IRepositoty<Movie> object
+        //to be a repositoty of movies for this controller
+        public HomeController(IMovieRepository Repository)
+        {
+            MoviesRepository = Repository;
+        }
+
+        //Show default view
         public ActionResult Index()
         {
-            ViewBag.MoviesList = GetMoviesList();
+            FillTheBag();
             return View(DefaultCustomer());
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Index(Customer customer)
-        {
-            ViewBag.MoviesList = GetMoviesList();
-            ViewBag.MovieTypesList = Enum.GetNames(typeof(Example.Domain.MovieType));
-            if (ModelState.IsValid)
-            {
-                ViewBag.DisplayStatement = true;
-            }
-            return View(customer);
-        }
-
+        //AJAX action to load a view for a new rental in the form
+        //receives Count as a number of currently present rentals in the form
         public ActionResult GetNewRental(int Count)
         {
-            ViewBag.MoviesList = GetMoviesList();
-            var FakedCustomer = DefaultCustomer();
+            FillTheBag();
             ViewData.TemplateInfo.HtmlFieldPrefix = string.Format("Rentals[{0}]", Count);
-            return PartialView("~/Views/Shared/EditorTemplates/Rental.cshtml", FakedCustomer.Rentals[0]);
+            var FakedCustomer = DefaultCustomer();
+            return PartialView("EditorTemplates/Rental", FakedCustomer.Rentals[0]);
         }
 
-        protected IEnumerable<Domain.Movie> GetMoviesList()
+        //AJAX action to generate end result - a rental bill in a form of html view
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Statement(Customer Customer)
         {
-            MoviesRepository repository = new MoviesRepository();
-            return repository.GetAll();
+            LoadMovies(Customer);
+            FillTheBag();
+            return PartialView("_Statement", Customer);
         }
 
+        //File action that returns a file containing plain text form of rental bill
+        public FileResult Download(Customer Customer)
+        {
+            LoadMovies(Customer);
+            var result = new FileContentResult(Encoding.UTF8.GetBytes(Customer.GetTextStatement()), "text/plain");
+            result.FileDownloadName = "statement.txt";
+            return result;
+        }
+
+        //Loading Movie objects from repository by MovieID in a Customer object
+        private void LoadMovies(ViewModels.Customer Customer)
+        {
+            foreach (var Rental in Customer.Rentals)
+            {
+                if (Rental.Movie != null && Rental.Movie.MovieID != 0)
+                {
+                    Rental.Movie = MoviesRepository.Get(Rental.Movie.MovieID);
+                }
+            }
+        }
+
+        //Default empty Customer object for not-yet-filled view form.
         private Customer DefaultCustomer()
         {
             Customer DefaultCustomer = new Customer();
@@ -51,6 +81,14 @@ namespace Example.MVC.Controllers
             rental.DaysRented = 1;
             DefaultCustomer.Rentals.Add(rental);
             return DefaultCustomer;
+        }
+
+        //Placing lists of objects in the ViewBag to pass to js and for dropdown list generation
+        private void FillTheBag()
+        {
+            ViewBag.MoviesList = MoviesRepository.GetAll();
+            ViewBag.MovieTypesList = Enum.GetNames(typeof(Example.Domain.MovieType));
+
         }
     }
 }

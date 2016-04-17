@@ -164,11 +164,8 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\MoviesContext.cs" />
-    <Compile Include="Models\MoviesContextInitializer.cs" />
-    <Compile Include="Models\MoviesRepository.cs" />
     <Compile Include="ViewModels\Customer.cs" />
-    <Compile Include="ViewModels\Movie.cs" />
+    <Compile Include="ViewModels\HtmlStatementBuilder.cs" />
     <Compile Include="ViewModels\Rental.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -190,6 +187,8 @@
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -212,8 +211,9 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\Movie.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\Rental.cshtml" />
+    <Content Include="Views\Home\EditorTemplates\Movie.cshtml" />
+    <Content Include="Views\Home\EditorTemplates\Rental.cshtml" />
+    <Content Include="Views\Shared\_Statement.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -231,9 +231,9 @@
       <Project>{039332b2-d50d-4085-905a-d83965e362f5}</Project>
       <Name>Example.Domain</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Example.Entities\Example.Entities.csproj">
+    <ProjectReference Include="..\Example.Persistence\Example.Persistence.csproj">
       <Project>{f036a787-b917-4dd6-9b71-910f421ed234}</Project>
-      <Name>Example.Entities</Name>
+      <Name>Example.Persistence</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

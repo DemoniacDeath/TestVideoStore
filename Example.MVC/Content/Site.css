@@ -22,3 +22,10 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.statement-name,
+.statement-cost,
+.statement-total-cost {
+    color: #F00;
+    font-weight: bold;
+}

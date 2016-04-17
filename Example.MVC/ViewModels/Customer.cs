@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
 
 namespace Example.MVC.ViewModels
 {
@@ -31,6 +28,19 @@ namespace Example.MVC.ViewModels
                 }
             }
             return DomainCustomer;
+        }
+
+        public string GetHtmlStatement()
+        {
+            Domain.Customer DomainCustomer = MapDomainModel();
+            HtmlStatementBuilder builder = new HtmlStatementBuilder();
+            return DomainCustomer.GetStatement(builder);
+        }
+
+        public string GetTextStatement()
+        {
+            Domain.Customer DomainCustomer = MapDomainModel();
+            return DomainCustomer.GetStatement();
         }
     }
 }

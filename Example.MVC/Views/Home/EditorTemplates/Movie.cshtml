@@ -1,0 +1,6 @@
+﻿@using Example.Persistence.Entities
+@model Example.Persistence.Entities.Movie
+
+@Html.DropDownListFor(model => model.MovieID, new SelectList(ViewBag.MoviesList as IEnumerable<Example.Persistence.Entities.Movie>, "MovieID", "Title"), "Название", htmlAttributes: new { @class = "title-select form-control" })
+
+<input readonly="readonly" class="movie-type form-control" placeholder="Тип" />

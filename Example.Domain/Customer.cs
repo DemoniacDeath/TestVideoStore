@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Text;
 
 namespace Example.Domain
 {
@@ -20,14 +19,14 @@ namespace Example.Domain
             this._rentals.Add(rental);
         }
 
-        public string GetStatement()
+        public string GetStatement(IStatementBuilder statementBuilder = null)
         {
             double totalAmount = 0;
             int frequentRenterPoints = 0;
-            var result = new StringBuilder();
+            if (statementBuilder == null)
+                statementBuilder = new TextStatementBuilder();
 
-            result.AppendFormat("Учет аренды для {0}", Name);
-            result.AppendLine();
+            statementBuilder.AppendTitleWithName("Учет аренды для {0}", Name);
             foreach (var rental in _rentals)
             {
                 double thisAmount = 0;
@@ -57,17 +56,15 @@ namespace Example.Domain
                     frequentRenterPoints++;
 
                 // показать результат для этой аренды
-                result.AppendFormat(" {0} {1:C}", rental.Movie.Title, thisAmount);
-                result.AppendLine();
+                statementBuilder.AppendRentalWithTitleAndCost(" {0} {1}", rental.Movie.Title, thisAmount);
                 totalAmount += thisAmount;
             }
 
             // добавить нижний колонтитул
-            result.AppendFormat("Сумма задолженности составляет {0:C}", totalAmount);
-            result.AppendLine();
-            result.AppendFormat("Вы заработали {0} очков за активность.", frequentRenterPoints);
+            statementBuilder.AppendFooterWithTotalCost("Сумма задолженности составляет {0}", totalAmount);
+            statementBuilder.AppendFooterWithPointsEarned("Вы заработали {0} очков за активность.", frequentRenterPoints);
 
-            return result.ToString();
+            return statementBuilder.ToStatement();
         }
     }
 }

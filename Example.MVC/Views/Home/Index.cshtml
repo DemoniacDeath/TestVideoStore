@@ -1,6 +1,6 @@
 ﻿@model Example.MVC.ViewModels.Customer
 
-@using (Html.BeginForm())
+@using (Ajax.BeginForm("Statement", null, new AjaxOptions { UpdateTargetId = "statement" }, new { @id = "customer_form" }))
 {
     @Html.AntiForgeryToken()
 
@@ -11,63 +11,71 @@
         @Html.LabelFor(model => model.Rentals, htmlAttributes: new { @class = "control-label" })
         @Html.EditorFor(model => model.Rentals, new { htmlAttributes = new { @class = "form-control" } })
     </div>
-    @section scripts
-    {
-        <script type="text/javascript">
-            var movies = @Html.Raw(@Json.Encode(ViewBag.MoviesList));
-            var movieTypes = @Html.Raw(@Json.Encode(ViewBag.MovieTypesList));
-            $(function () {
-                function showMovieType(movieSelect)
-                {
-                    var movieType = "";
-                    if (movieSelect.val())
-                    {
-                        for (var i in movies)
-                        {
-                            if (movies[i].Title == movieSelect.val())
-                            {
-                                movieType = movieTypes[movies[i].Type];
-                            }
-                        }
-                    }
-                    movieSelect.parents('.rental-container').find('.movie-type').html(movieType);
-                }
-                function addNewRentalIfNeeded()
-                {
-                    var noEmpty = true;
-                    $('.title-select').each(function () {
-                        if (!$(this).val()) {
-                            noEmpty = false;
-                        }
-                    });
-                    if (noEmpty)
-                    {
-                        $.ajax("@Url.Action("GetNewRental", "Home")", {
-                            data: {
-                                Count: $('.title-select').size()
-                            },
-                            success: function (result) {
-                                $('#rentals_container').append(result);
-                            }
-                        })
-                    }
-                }
-                $('.title-select').each(function(){
-                    showMovieType($(this));
-                });
-                $("#rentals_container").on("change", ".title-select", function () {
-                    addNewRentalIfNeeded();
-                    showMovieType($(this));
-                });
-            });
-        </script>
-    }
-    <input type="submit" value="Посчитать" class="btn btn-default" />
+    <input id="load_statement_button" type="submit" value="Посчитать" class="btn btn-default" />
 }
 
-@if (ViewBag.DisplayStatement != null)
+<hr />
+
+<div id="statement"></div>
+
+@section scripts
 {
-    <div class="statement">
-        @Model.MapDomainModel().GetStatement()
-    </div>
+    <script type="text/javascript">
+        $(function () {
+            var movies = @Html.Raw(@Json.Encode(ViewBag.MoviesList));
+            var movieTypes = @Html.Raw(@Json.Encode(ViewBag.MovieTypesList));
+            var newRentalUrl = "@Url.Action("GetNewRental", "Home")";
+            var statementUrl = "@Url.Action("Download", "Home")";
+            function showMovieType(movieSelect)
+            {
+                var movieType = "";
+                if (movieSelect.val())
+                {
+                    for (var i in movies)
+                    {
+                        if (movies[i].MovieID == movieSelect.val())
+                        {
+                            movieType = movieTypes[movies[i].Type];
+                        }
+                    }
+                }
+                movieSelect.parents('.rental-container').find('.movie-type').val(movieType);
+            }
+            function addNewRentalIfNeeded()
+            {
+                var noEmpty = true;
+                $('.title-select').each(function () {
+                    if (!$(this).val()) {
+                        noEmpty = false;
+                    }
+                });
+                if (noEmpty)
+                {
+                    $.ajax(newRentalUrl, {
+                        data: {
+                            Count: $('.title-select').size()
+                        },
+                        success: function (result) {
+                            $('#rentals_container').append(result);
+                        }
+                    })
+                }
+            }
+            $('.title-select').each(function(){
+                showMovieType($(this));
+            });
+            $("#rentals_container").on("change", ".title-select", function () {
+                addNewRentalIfNeeded();
+                showMovieType($(this));
+                if ($('#Name').val())
+                    $('#customer_form').submit();
+            });
+            $('#statement').on("click", "#download_statement_button", function(){
+                var url = statementUrl;
+                var formData = $('#customer_form').serialize();
+                url += "?" + formData;
+                window.location.assign(url);
+            });
+        });
+    </script>
 }

@@ -1,4 +1,4 @@
-﻿using Example.MVC.Models;
+﻿using Example.Persistence.Contexts;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -14,7 +14,7 @@ namespace Example.MVC
     {
         protected void Application_Start()
         {
-            //Database.SetInitializer<MoviesContext>(new MoviesContextInitializer());
+            Database.SetInitializer(new MoviesContextInitializer());
 
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);

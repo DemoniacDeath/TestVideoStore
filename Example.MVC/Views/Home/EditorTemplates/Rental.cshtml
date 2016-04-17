@@ -1,9 +1,10 @@
 ﻿@model Example.MVC.ViewModels.Rental
 
-<div class="rental-container">
+<div class="rental-container form-inline">
     @Html.EditorFor(model => model.Movie)
 
-    @Html.DisplayNameFor(model => model.DaysRented)
+    <span>на</span>
     @Html.EditorFor(model => model.DaysRented, new { htmlAttributes = new { @class = "form-control", @min = 1 } })
+    <span>дней</span>
     @Html.ValidationMessageFor(model => model.DaysRented, "", new { @class = "text-danger" })
 </div>
