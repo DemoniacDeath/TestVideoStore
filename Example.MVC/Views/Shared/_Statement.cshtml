@@ -1,3 +1,4 @@
-﻿@model Example.MVC.ViewModels.Customer
-<pre>@Html.Raw(@Model.GetHtmlStatement())</pre>
+﻿@using Example.MVC.ViewModels
+@model Example.Domain.Customer
+<pre>@Html.Raw(@Model.GetStatement(new HtmlStatementBuilder()))</pre>
 <button id="download_statement_button" class="btn btn-default">Скачать как .txt файл</button>

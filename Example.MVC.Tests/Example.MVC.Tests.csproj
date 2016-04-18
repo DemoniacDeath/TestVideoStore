@@ -95,6 +95,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Example.Domain\Example.Domain.csproj">
+      <Project>{039332B2-D50D-4085-905A-D83965E362F5}</Project>
+      <Name>Example.Domain</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Example.MVC\Example.MVC.csproj">
       <Project>{2629DF3A-0A95-43FB-A6F4-AD70CA82DE53}</Project>
       <Name>Example.MVC</Name>
